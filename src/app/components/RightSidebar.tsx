@@ -1,8 +1,14 @@
 
-export default function RightSidebar() {
+interface RightSidebarProps {
+    children?: React.ReactNode;
+}
+
+export default function RightSidebar({ children }: RightSidebarProps) {
     return (
         <aside className="l_right">
             <div className="widgets">
+                {children}
+
                 <div className="widget-wrapper tagcloud">
                     <div className="widget-header dis-select">
                         <span className="name">标签云</span>
