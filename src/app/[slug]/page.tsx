@@ -90,7 +90,8 @@ export default async function PostPage({ params }: PageProps) {
             <div className="sitebg">
                 <div className="siteblur"></div>
             </div>
-            <div className="l_body">
+            {/* Extended attributes to match Stellar's selectors for post layout */}
+            <div className="l_body content" id="start" {...{ layout: "post", type: "tech" }}>
                 <LeftSidebar />
 
                 <div className="l_main" id="main">
@@ -128,6 +129,12 @@ export default async function PostPage({ params }: PageProps) {
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug]}
+                                components={{
+                                    img: (props) => (
+                                        // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+                                        <img {...props} referrerPolicy="no-referrer" style={{ maxWidth: '100%', borderRadius: '8px', display: 'block', margin: '1em auto' }} />
+                                    )
+                                }}
                             >
                                 {post.content}
                             </ReactMarkdown>
