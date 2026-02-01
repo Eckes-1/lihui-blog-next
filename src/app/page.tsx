@@ -4,8 +4,7 @@ import RightSidebar from "./components/RightSidebar";
 import PostList from "./components/PostList";
 import { db } from "@/lib/db";
 
-// Revalidate every hour
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 async function getPosts() {
   try {
