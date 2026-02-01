@@ -10,20 +10,31 @@ export const revalidate = 3600;
 async function getPosts() {
   try {
     const result = await db.execute("SELECT * FROM posts ORDER BY created_at DESC");
-    return result.rows.map((row: any) => ({
+    const posts = result.rows.map((row: any) => ({
       title: row.title,
       excerpt: row.excerpt || "",
       date: row.date || new Date(row.created_at).toISOString().split('T')[0],
       link: `/${row.slug}`,
     }));
-  } catch (error) {
+    return { posts, error: null };
+  } catch (error: any) {
     console.error("Database Error:", error);
-    return [];
+    return { posts: [], error: error.message || "Unknown database error" };
   }
 }
 
 export default async function Home() {
-  const posts = await getPosts();
+  const { posts, error } = await getPosts();
+
+  if (error) {
+    return (
+      <div style={{ padding: 50, textAlign: "center", color: "red" }}>
+        <h3>数据库连接失败</h3>
+        <p>{error}</p>
+        <p style={{ fontSize: "0.8em", color: "#666" }}>请检查 Vercel 环境变量设置 (TURSO_DATABASE_URL, TURSO_AUTH_TOKEN)</p>
+      </div>
+    );
+  }
   return (
     <>
       <div className="sitebg">
