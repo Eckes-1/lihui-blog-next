@@ -5,9 +5,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
+import GithubSlugger from "github-slugger";
 import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
 import SidebarControl from "../components/SidebarControl";
+import TOC from "../components/TOC";
 import Link from "next/link";
 import "../stellar.css"; // Ensure styles are applied
 
@@ -58,6 +61,30 @@ export default async function PostPage({ params }: PageProps) {
         notFound();
     }
 
+    // Generate TOC data
+    const slugger = new GithubSlugger();
+    const headings: { text: string; level: number; id: string }[] = [];
+
+    // Simple regex to extract headings from markdown
+    const lines = post.content.split('\n');
+    let inCodeBlock = false;
+
+    lines.forEach(line => {
+        if (line.trim().startsWith('```')) {
+            inCodeBlock = !inCodeBlock;
+            return;
+        }
+        if (inCodeBlock) return;
+
+        const match = line.match(/^(#{1,6})\s+(.+)$/);
+        if (match) {
+            const level = match[1].length;
+            const text = match[2].replace(/<[^>]*>/g, '').trim(); // Strip HTML tags if any
+            const id = slugger.slug(text);
+            headings.push({ text, level, id });
+        }
+    });
+
     return (
         <>
             <div className="sitebg">
@@ -100,7 +127,7 @@ export default async function PostPage({ params }: PageProps) {
                         <div className="content">
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                                rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug]}
                             >
                                 {post.content}
                             </ReactMarkdown>
@@ -117,7 +144,9 @@ export default async function PostPage({ params }: PageProps) {
                     </div>
                 </div>
 
-                <RightSidebar />
+                <RightSidebar>
+                    <TOC headings={headings} />
+                </RightSidebar>
                 <SidebarControl />
             </div>
         </>
