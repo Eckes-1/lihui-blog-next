@@ -86,8 +86,6 @@ export default async function PostPage({ params }: PageProps) {
 
                             <div className="divider"></div>
 
-                            {/* Markdown Content */}
-                            {/* Markdown Content */}
                             <div className="content">
                                 <ReactMarkdown
                                     remarkPlugins={[remarkGfm]}
