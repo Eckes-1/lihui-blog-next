@@ -1,25 +1,25 @@
-
 import PostCard from "./PostCard";
+title: string;
+excerpt: string;
+date: string;
+link: string;
+}
 
-const samplePosts = [
-    {
-        title: "你好，世界",
-        excerpt: "欢迎来到我的全新动态博客！这是一个基于 Next.js 复刻的 Stellar 主题。",
-        date: "2026-02-01",
-        link: "/hello-world",
-    },
-    {
-        title: "迁移进度汇报",
-        excerpt: "全站样式已经完成了 90% 的复刻。",
-        date: "2026-02-01",
-        link: "/next-js-migration",
-    },
-];
-
-export default function PostList() {
+export default function PostList({ posts }: { posts: Post[] }) {
+    if (!posts || posts.length === 0) {
+        return (
+            <div className="post-list post">
+                <div className="post-card-wrap">
+                    <article className="md-text">
+                        <p style={{ textAlign: "center", padding: "20px", color: "var(--text-p3)" }}>暂无文章</p>
+                    </article>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="post-list post">
-            {samplePosts.map((post, index) => (
+            {posts.map((post, index) => (
                 <PostCard key={index} {...post} />
             ))}
         </div>

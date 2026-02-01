@@ -2,8 +2,28 @@
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import PostList from "./components/PostList";
+import { db } from "@/lib/db";
 
-export default function Home() {
+// Revalidate every hour
+export const revalidate = 3600;
+
+async function getPosts() {
+  try {
+    const result = await db.execute("SELECT * FROM posts ORDER BY created_at DESC");
+    return result.rows.map((row: any) => ({
+      title: row.title,
+      excerpt: row.excerpt || "",
+      date: row.date || new Date(row.created_at).toISOString().split('T')[0],
+      link: `/${row.slug}`,
+    }));
+  } catch (error) {
+    console.error("Database Error:", error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const posts = await getPosts();
   return (
     <>
       <div className="sitebg">
@@ -40,7 +60,7 @@ export default function Home() {
             </div>
           </div>
 
-          <PostList />
+          <PostList posts={posts} />
 
           <footer className="page-footer footnote">
             <hr />
