@@ -1,8 +1,10 @@
 import PostCard from "./PostCard";
-title: string;
-excerpt: string;
-date: string;
-link: string;
+
+interface Post {
+    title: string;
+    excerpt: string;
+    date: string;
+    link: string;
 }
 
 export default function PostList({ posts }: { posts: Post[] }) {
