@@ -24,7 +24,7 @@ export default function RightSidebar() {
                                     Eckes-1/lihui-blog
                                 </div>
                                 <div className="repo-desc">
-                                    <span type="text" id="description">分享技术与生活</span>
+                                    <span id="description">分享技术与生活</span>
                                 </div>
                             </a>
                         </div>
