@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 // Importing Stellar Theme CSS
 import "./stellar.css";
+import "./highlight.css";
 import ThemeProvider from "./components/ThemeProvider";
 
 export const metadata: Metadata = {
