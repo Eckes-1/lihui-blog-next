@@ -2,6 +2,7 @@
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import PostList from "./components/PostList";
+import SidebarControl from "./components/SidebarControl";
 import { db } from "@/lib/db";
 
 export const dynamic = 'force-dynamic';
@@ -81,6 +82,7 @@ export default async function Home() {
         </div>
 
         <RightSidebar />
+        <SidebarControl />
       </div>
     </>
   );

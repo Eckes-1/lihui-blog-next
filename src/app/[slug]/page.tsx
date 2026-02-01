@@ -7,6 +7,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
 import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
+import SidebarControl from "../components/SidebarControl";
 import Link from "next/link";
 import "../stellar.css"; // Ensure styles are applied
 
@@ -107,6 +108,7 @@ export default async function PostPage({ params }: PageProps) {
                 </div>
 
                 <RightSidebar />
+                <SidebarControl />
             </div>
         </>
     );
