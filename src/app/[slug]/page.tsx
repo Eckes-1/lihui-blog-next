@@ -87,13 +87,15 @@ export default async function PostPage({ params }: PageProps) {
                             <div className="divider"></div>
 
                             {/* Markdown Content */}
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw, rehypeHighlight]}
-                                className="content"
-                            >
-                                {post.content}
-                            </ReactMarkdown>
+                            {/* Markdown Content */}
+                            <div className="content">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    rehypePlugins={[rehypeRaw, rehypeHighlight]}
+                                >
+                                    {post.content}
+                                </ReactMarkdown>
+                            </div>
 
                         </div>
                     </article>
