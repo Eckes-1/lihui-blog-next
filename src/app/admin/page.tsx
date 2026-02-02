@@ -16,9 +16,9 @@ export default async function AdminDashboard() {
     return (
         <div>
             <div className="admin-header">
-                <h1>Dashboard</h1>
+                <h1>仪表盘</h1>
                 <Link href="/admin/posts/new" className="btn-primary">
-                    <Plus size={18} /> New Post
+                    <Plus size={18} /> 新建文章
                 </Link>
             </div>
 
@@ -29,7 +29,7 @@ export default async function AdminDashboard() {
                             <FileText className="text-blue-500" />
                         </div>
                         <div>
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-p2)' }}>Total Posts</div>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-p2)' }}>文章总数</div>
                             <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{postCount}</div>
                         </div>
                     </div>

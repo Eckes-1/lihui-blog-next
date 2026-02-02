@@ -16,16 +16,16 @@ export default async function AdminLayout({
     return (
         <div className="admin-layout">
             <aside className="admin-sidebar">
-                <h2>Blog Admin</h2>
+                <h2>博客后台</h2>
                 <nav style={{ flex: 1 }}>
                     <Link href="/admin" className="nav-item">
-                        <LayoutDashboard /> Dashboard
+                        <LayoutDashboard /> 仪表盘
                     </Link>
                     <Link href="/admin/posts" className="nav-item">
-                        <FileText /> Posts
+                        <FileText /> 文章管理
                     </Link>
                     <Link href="/admin/settings" className="nav-item">
-                        <Settings /> Settings
+                        <Settings /> 设置
                     </Link>
                 </nav>
 
@@ -34,7 +34,7 @@ export default async function AdminLayout({
                     await signOut();
                 }}>
                     <button className="nav-item" style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
-                        <LogOut /> Sign Out
+                        <LogOut /> 退出登录
                     </button>
                 </form>
             </aside>

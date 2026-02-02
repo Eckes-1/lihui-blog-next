@@ -11,9 +11,9 @@ export async function authenticate(prevState: string | undefined, formData: Form
         if (error instanceof AuthError) {
             switch (error.type) {
                 case 'CredentialsSignin':
-                    return 'Invalid password.'
+                    return '密码错误。'
                 default:
-                    return 'Something went wrong.'
+                    return '发生错误，请重试。'
             }
         }
         throw error

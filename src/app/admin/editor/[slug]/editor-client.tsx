@@ -26,20 +26,20 @@ export default function EditorClient({ post }: { post?: any }) {
                     <Link href="/admin/posts" style={{ color: 'var(--text-p1)' }}>
                         <ArrowLeft />
                     </Link>
-                    <div style={{ fontWeight: 'bold' }}>{isNew ? 'New Post' : 'Edit Post'}</div>
+                    <div style={{ fontWeight: 'bold' }}>{isNew ? '新建文章' : '编辑文章'}</div>
                 </div>
 
                 <button type="submit" className="btn-primary">
-                    <Save size={18} /> Save
+                    <Save size={18} /> 保存
                 </button>
             </div>
 
             {/* Controls Bar */}
             <div style={{ padding: '1rem', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '1rem', background: 'var(--theme-bg)' }}>
-                <input name="title" className="form-input" placeholder="Post Title" value={title} onChange={e => setTitle(e.target.value)} required />
-                <input name="slug" className="form-input" placeholder="url-slug" value={slug} onChange={e => setSlug(e.target.value)} required />
+                <input name="title" className="form-input" placeholder="文章标题" value={title} onChange={e => setTitle(e.target.value)} required />
+                <input name="slug" className="form-input" placeholder="固定链接 (Slug)" value={slug} onChange={e => setSlug(e.target.value)} required />
                 <input name="date" type="date" className="form-input" value={date} onChange={e => setDate(e.target.value)} />
-                <input name="tags" className="form-input" placeholder="Tags (comma separated)" value={tags} onChange={e => setTags(e.target.value)} />
+                <input name="tags" className="form-input" placeholder="标签 (逗号分隔)" value={tags} onChange={e => setTags(e.target.value)} />
             </div>
 
             <input type="hidden" name="originalSlug" value={isNew ? "new" : post.slug} />
@@ -49,17 +49,17 @@ export default function EditorClient({ post }: { post?: any }) {
             {/* Main Editor */}
             <div className="editor-container" style={{ padding: '0 1rem 1rem 1rem', flex: 1 }}>
                 <div className="editor-pane">
-                    <div className="pane-header">Markdown</div>
+                    <div className="pane-header">Markdown 编辑</div>
                     <textarea
                         className="markdown-editor"
                         value={content}
                         onChange={e => setContent(e.target.value)}
-                        placeholder="Write your markdown here..."
+                        placeholder="在此输入 Markdown 内容..."
                     />
                 </div>
 
                 <div className="preview-pane">
-                    <div className="pane-header">Preview</div>
+                    <div className="pane-header">实时预览</div>
                     <div className="preview-content stellar-markdown-body">
                         {/* We wrap in a div that might need specific classes if StellarMarkdown relies on usage within .md-text */}
                         <div className="md-text content">

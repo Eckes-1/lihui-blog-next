@@ -9,19 +9,19 @@ export default async function AdminPostsPage() {
     return (
         <div>
             <div className="admin-header">
-                <h1>All Posts</h1>
+                <h1>所有文章</h1>
                 <Link href="/admin/posts/new" className="btn-primary">
-                    <Plus size={18} /> New Post
+                    <Plus size={18} /> 新建文章
                 </Link>
             </div>
 
             <table className="data-table">
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Tags</th>
-                        <th style={{ width: '100px' }}>Actions</th>
+                        <th>标题</th>
+                        <th>发布日期</th>
+                        <th>标签</th>
+                        <th style={{ width: '100px' }}>操作</th>
                     </tr>
                 </thead>
                 <tbody>
