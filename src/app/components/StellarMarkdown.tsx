@@ -1,5 +1,6 @@
 
 "use client";
+// Deployment Trigger: Force Vercel Rebuild 2026-02-02
 import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
