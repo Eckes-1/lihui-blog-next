@@ -116,11 +116,10 @@ const preprocessContent = (content: string) => {
                   </div>`;
                 }
             } else {
-            } else {
                 // Fallback to Markdown list format
                 // Expected: - **Header** Body or - Header: Body
                 const items = body.split(/\n-\s+/).filter((i: string) => i.trim());
-                items.forEach((item, index) => {
+                items.forEach((item: string, index: number) => {
                     // Extract header from first bold **...** or first line
                     let header = '';
                     let content = item;
