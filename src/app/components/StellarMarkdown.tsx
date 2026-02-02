@@ -95,26 +95,180 @@ const preprocessContent = (content: string) => {
     );
 
     // --- 3. Timeline ---
+    // Support two formats:
+    // 1. <!-- node header --> body (Standard Stellar default)
+    // 2. - **Header** Body (Markdown list, user preferred)
     newContent = newContent.replace(
         /{%\s*timeline\s*(.*?)\s*%}([\s\S]*?){%\s*endtimeline\s*%}/g,
         (match, args, body) => {
-            // Parse nodes: <!-- node header --> body
-            const nodes = body.split(/<!--\s*node (.*?)\s*-->/);
-            // Result: [preamble, header1, body1, header2, body2...]
-
             let html = `<div class="tag-plugin timeline">`;
 
-            for (let i = 1; i < nodes.length; i += 2) {
-                const header = nodes[i];
-                const content = nodes[i + 1]; // This is markdown content
-                html += `
-              <div class="timenode" index="${(i - 1) / 2}">
-                  <div class="header">${header ? `<span>${header}</span>` : ''}</div>
-                  <div class="body fs14">${content}</div>
-              </div>`;
+            // Try standard node format first
+            if (body.includes('<!-- node')) {
+                const nodes = body.split(/<!--\s*node (.*?)\s*-->/);
+                for (let i = 1; i < nodes.length; i += 2) {
+                    const header = nodes[i];
+                    const content = nodes[i + 1];
+                    html += `
+                  <div class="timenode" index="${(i - 1) / 2}">
+                      <div class="header">${header ? `<span>${header}</span>` : ''}</div>
+                      <div class="body fs14">${content}</div>
+                  </div>`;
+                }
+            } else {
+                // Fallback to Markdown list format
+                // Expected: - **Header** Body or - Header: Body
+                const items = body.split(/\n-\s+/).filter(i => i.trim());
+                items.forEach((item, index) => {
+                    // Extract header from first bold **...** or first line
+                    let header = '';
+                    let content = item;
+
+                    const headerMatch = item.match(/^\*\*(.*?)\*\*(.*)/s);
+                    if (headerMatch) {
+                        header = headerMatch[1];
+                        content = headerMatch[2];
+                    } else {
+                        // Maybe just split by first newline?
+                        const lines = item.split('\n');
+                        header = lines[0]; // Simple header
+                        content = lines.slice(1).join('\n');
+                    }
+
+                    html += `
+                  <div class="timenode" index="${index}">
+                      <div class="header">${header ? `<span>${header}</span>` : ''}</div>
+                      <div class="body fs14">${content}</div>
+                  </div>`;
+                });
             }
+
             html += `</div>`;
             return html;
+        }
+    );
+
+    // --- 6. Link ---
+    // {% link url [title] [desc:desc] [icon:src] %}
+    newContent = newContent.replace(
+        /{%\s*link\s+(.*?)\s*%}/g,
+        (match, args) => {
+            const argParts = args.trim().split(/\s+/);
+            const props: any = {};
+            let url = '';
+            let title = '';
+
+            argParts.forEach((part: string) => {
+                if (part.includes(':')) {
+                    const [k, v] = part.split(':');
+                    props[k] = v;
+                } else if (!url) {
+                    url = part;
+                } else {
+                    title += (title ? ' ' : '') + part;
+                }
+            });
+            props.url = props.url || url;
+            props.title = props.title || title || props.url;
+
+            const isRich = props.desc ? 'rich' : 'plain';
+
+            return `
+             <div class="tag-plugin link dis-select">
+                <a class="link-card ${isRich}" title="${props.title}" href="${props.url}" target="_blank" rel="external nofollow noopener noreferrer" cardlink>
+                    ${props.desc ? `
+                        <div class="top">
+                             ${props.icon ? `<div class="lazy img" style="background-image:url(${props.icon})"></div>` : ''}
+                             <span class="cap link footnote">${props.url}</span>
+                        </div>
+                        <div class="bottom">
+                            <span class="title">${props.title}</span>
+                            <span class="cap desc footnote">${props.desc}</span>
+                        </div>
+                    ` : `
+                        <div class="left">
+                            <span class="title">${props.title}</span>
+                            <span class="cap link footnote">${props.url}</span>
+                        </div>
+                        <div class="right">
+                             ${props.icon ? `<div class="lazy img" style="background-image:url(${props.icon})"></div>` : ''}
+                        </div>
+                    `}
+                </a>
+             </div>
+             `;
+        }
+    );
+
+    // --- 7. Button ---
+    // {% button [color:color] text url [icon:key/src] [size:xs] %}
+    newContent = newContent.replace(
+        /{%\s*button\s+(.*?)\s*%}/g,
+        (match, args) => {
+            const props: any = { size: 'md', color: 'default' };
+            const argParts = args.trim().split(/\s+/);
+            const loose: string[] = [];
+
+            argParts.forEach((part: string) => {
+                if (part.includes(':')) {
+                    const [k, v] = part.split(':');
+                    props[k] = v;
+                } else {
+                    loose.push(part);
+                }
+            });
+
+            let text = '';
+            let url = '';
+
+            loose.forEach((val: string) => {
+                if (val.match(/^https?:\/\//) || val.match(/^\//)) {
+                    url = val;
+                } else {
+                    text += (text ? ' ' : '') + val;
+                }
+            });
+
+            return `
+            <a class="tag-plugin colorful button" color="${props.color}" size="${props.size}" title="${text}" href="${url}">
+                ${props.icon ? `<img src="${props.icon}" style="width:1.2em;height:1.2em;vertical-align:middle;margin-right:4px;"/>` : ''}
+                <span>${text}</span>
+            </a>
+            `;
+        }
+    );
+
+    // --- 8. Friends ---
+    newContent = newContent.replace(
+        /{%\s*friends\s+(.*?)\s*%}/g,
+        (match, args) => {
+            return `<div class="tag-plugin users-wrap" data-args="${args}"><div class="grid-box">Loading Friends...</div></div>`;
+        }
+    );
+
+    // --- 9. About ---
+    newContent = newContent.replace(
+        /{%\s*about\s+(.*?)\s*%}([\s\S]*?){%\s*endabout\s*%}/g,
+        (match, args, body) => {
+            const props: any = {};
+            args.trim().split(/\s+/).forEach((part: string) => {
+                const [k, v] = part.split(':');
+                props[k] = v;
+            });
+
+            return `
+             <div class="tag-plugin about">
+                 ${props.avatar ? `
+                 <div class="about-header">
+                    <div class="avatar">
+                        <img src="${props.avatar}" style="${props.border ? `border-radius:${props.border};` : ''}" height="${props.height || '80px'}"/>
+                    </div>
+                 </div>` : ''}
+                 <div class="about-body fs14">
+                    ${body}
+                 </div>
+             </div>
+             `;
         }
     );
 
