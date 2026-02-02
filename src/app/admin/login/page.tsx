@@ -3,7 +3,7 @@
 
 import { authenticate } from "@/app/lib/auth-actions"; // Fixed import path
 import { useActionState } from "react";
-import "../../admin.css";
+import "../admin.css";
 
 export default function LoginPage() {
     const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
