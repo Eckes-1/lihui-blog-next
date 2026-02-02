@@ -11,6 +11,7 @@ import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
 import SidebarControl from "../components/SidebarControl";
 import TOC from "../components/TOC";
+import StellarMarkdown from "../components/StellarMarkdown";
 import Link from "next/link";
 import "../stellar.css"; // Ensure styles are applied
 
