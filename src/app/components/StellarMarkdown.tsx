@@ -71,7 +71,7 @@ const preprocessContent = (content: string) => {
             let isOpen = false;
             let child = '';
 
-            argParts.forEach(part => {
+            argParts.forEach((part: string) => {
                 if (part.includes(':')) {
                     const [k, v] = part.split(':');
                     if (k === 'color') color = v;
@@ -123,7 +123,7 @@ const preprocessContent = (content: string) => {
         /{%\s*grid\s*(.*?)\s*%}([\s\S]*?){%\s*endgrid\s*%}/g,
         (match, args, body) => {
             const argMap: any = {};
-            args.trim().split(/\s+/).forEach(part => {
+            args.trim().split(/\s+/).forEach((part: string) => {
                 const [k, v] = part.split(':');
                 if (k && v) argMap[k] = v;
             });
@@ -136,7 +136,7 @@ const preprocessContent = (content: string) => {
 
             const cells = body.split(/<!--\s*cell\s*-->/);
             let cellsHtml = '';
-            cells.forEach(cell => {
+            cells.forEach((cell: string) => {
                 if (cell.trim()) {
                     cellsHtml += `<div class="cell" style="${argMap.br ? `border-radius:${argMap.br};` : ''}">${cell}</div>`;
                 }
