@@ -1,11 +1,6 @@
 
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import rehypeHighlight from "rehype-highlight";
-import rehypeSlug from "rehype-slug";
 import GithubSlugger from "github-slugger";
 import LeftSidebar from "../components/LeftSidebar";
 import RightSidebar from "../components/RightSidebar";
@@ -127,18 +122,7 @@ export default async function PostPage({ params }: PageProps) {
 
                     <article className="md-text content">
                         <div className="content">
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug]}
-                                components={{
-                                    img: (props) => (
-                                        // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-                                        <img {...props} referrerPolicy="no-referrer" style={{ maxWidth: '100%', borderRadius: '8px', display: 'block', margin: '1em auto' }} />
-                                    )
-                                }}
-                            >
-                                {post.content}
-                            </ReactMarkdown>
+                            <StellarMarkdown content={post.content} />
                         </div>
                     </article>
 
