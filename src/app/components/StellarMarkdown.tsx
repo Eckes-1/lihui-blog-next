@@ -1,6 +1,6 @@
 
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkDirective from 'remark-directive';
@@ -8,184 +8,228 @@ import rehypeRaw from 'rehype-raw';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import { visit } from 'unist-util-visit';
-import { h } from 'hastscript';
 
-// Remark plugin to handle directives
-function remarkStellarDirectives() {
-    return (tree: any) => {
-        visit(tree, (node) => {
-            if (
-                node.type === 'containerDirective' ||
-                node.type === 'leafDirective' ||
-                node.type === 'textDirective'
-            ) {
-                const data = node.data || (node.data = {});
-                const tagName = node.type === 'textDirective' ? 'span' : 'div';
-
-                // Map directive name to class name
-                // e.g. :::note -> class="tag-plugin note"
-                let className = `tag-plugin ${node.name}`;
-
-                // Handle arguments (e.g. :::note[Title])
-                // If there are attributes (:::note{type="info"}), add them to class
-                if (node.attributes && node.attributes.class) {
-                    className += ` ${node.attributes.class}`;
-                }
-
-                // Special handling for 'note' to match Stellar structure
-                if (node.name === 'note') {
-                    // Stellar notes have a specific structure:
-                    // <div class="tag-plugin note">
-                    //   <div class="title">Title</div> (optional)
-                    //   <div class="body">Content</div>
-                    // </div>
-
-                    // In remark-directive, the title usually comes from checking the first child or label
-                    // But simpler mapping is: content is children.
-
-                    data.hName = 'div';
-                    data.hProperties = { className: className };
-
-                    // If we have a label (:::note[Title]), we should render it as title
-                    // But transforming children structure in remark is complex.
-                    // Easier approach: Use rehype plugin or custom component.
-                    // Let's stick to standard behavior first: 
-                    // node.children will be put inside the div.
-
-                    // However, Stellar CSS expects .body wrapper for content.
-                    // We will handle this by simple class addition for now.
-                    // If precise structure is needed, we might need a Rehype plugin.
-                } else {
-                    data.hName = tagName;
-                    data.hProperties = { className: className };
-                }
-            }
-        });
-    };
-}
-
-// Rehype plugin to restructure specific Stellar components
-function rehypeStellarStructure() {
-    return (tree: any) => {
-        visit(tree, (node) => {
-            if (node.type === 'element' && node.properties && node.properties.className) {
-                const classes = (node.properties.className as string[]).join(' ');
-
-                // Handle Note structure: wrap children in .body, extract title
-                if (classes.includes('tag-plugin note')) {
-                    // We need to verify if we can extract a title properly from directive label
-                    // Unfortunately remark-directive puts label in `node.children` if using `:::note[label]`, 
-                    // but standard container directive `:::note` usually puts everything in children.
-
-                    // WORKAROUND: For exact Stellar replication, let's wrap ALL content in .body
-                    // and if we can find a title mechanism later, we add .title
-
-                    // Check if already modified
-                    if (node.children.length > 0 && node.children[0].properties && node.children[0].properties.className === 'body') {
-                        return;
-                    }
-
-                    const bodyNode = {
-                        type: 'element',
-                        tagName: 'div',
-                        properties: { className: ['body'] },
-                        children: node.children
-                    };
-
-                    node.children = [bodyNode];
-
-                    // If there was a label/title passed via directive, it's hard to catch here without passing data from remark.
-                    // So for now, we just ensure the .body wrapper exists which is CRITICAL for Stellar CSS.
-                }
-
-                // Timeline handling
-                if (classes.includes('tag-plugin timeline')) {
-                    // Stellar timeline structure: .tag-plugin.timeline > .timenode
-                    // Markdown: 
-                    // :::timeline
-                    // - **Date** Content
-                    // :::
-                    // This usually renders as div > ul > li
-                    // We might need to transform ul/li to div.timenode
-                }
-            }
-        });
-    };
-}
-
-
-// Preprocessor to convert Hexo syntax to Directive syntax
+/**
+ * Preprocess Content to convert Hexo Tags to HTML/Directives
+ * This acts as the bridge between Hexo syntax and standardized HTML structure expected by Stellar CSS
+ */
 const preprocessContent = (content: string) => {
     if (!content) return "";
 
     let newContent = content;
 
-    // Replace {% note class %} ... {% endnote %}
-    // Regex needs to handle multiline.
-    // Hexo: {% note info title %}
-    // Directive: :::note[title]{class="info"} (approximate)
-    // Simplified: :::note (with class derived)
+    // --- 1. Note Tag (Flexible Args) ---
+    // {% note [color:color] [title] content %}
+    // Regex needs to be robust for optional args.
+    // Note: content in capture group 2 might contain newlines
+    newContent = newContent.replace(
+        /{%\s*note\s+(.*?)\s*%}([\s\S]*?){%\s*endnote\s*%}/g,
+        (match, args, body) => {
+            const argParts = args.trim().split(/\s+/);
+            let color = 'default';
+            let title = '';
 
-    // Case 1: {% note class %} -> :::note{.class}
-    // We map Hexo classes to directive classes
-    // Hexo: {% note info %} -> :::note{.info}
+            const colors = ['default', 'blue', 'pink', 'red', 'purple', 'orange', 'green', 'info', 'warning', 'error', 'success'];
 
-    // Replace Start Tags
-    newContent = newContent.replace(/{%\s*note\s+([^%]+)\s*%}/g, (match, args) => {
-        const parts = args.trim().split(/\s+/);
-        const type = parts[0]; // e.g. info, warning
-        // If there are more parts, they might be title, but Hexo note usually doesn't take separate title arg in this syntax variant commonly?
-        // Actually Stellar supports: {% note color title %}
+            // Heuristic to detect if first arg is color or title
+            if (colors.includes(argParts[0])) {
+                color = argParts[0];
+                title = argParts.slice(1).join(' ');
+            } else if (argParts[0].includes(':')) {
+                // handle key:value like color:blue
+                const kv = argParts[0].split(':');
+                if (kv[0] === 'color') color = kv[1];
+                title = argParts.slice(1).join(' ');
+            } else {
+                // Assume it's just title, use default color
+                title = argParts.join(' ');
+            }
 
-        return `:::note{class="${type}"}`;
-    });
+            // Stellar HTML Structure for Note
+            // <div class="tag-plugin colorful note" color="class_name"> ... </div>
+            // Note: Stellar CSS uses attribute selectors often [color=...] or checks classes.
+            // Based on note.js: class="tag-plugin colorful note" + ctx.args.joinTags...
 
-    // Replace End Tags
-    newContent = newContent.replace(/{%\s*endnote\s*%}/g, ":::");
+            return `
+<div class="tag-plugin colorful note" color="${color}">
+  ${title ? `<div class="title">${title}</div>` : ''}
+  <div class="body">
+    ${body}
+  </div>
+</div>
+`;
+        });
 
-    // Replace {% timeline %} ... {% endtimeline %}
-    // Usually this wraps a list.
-    newContent = newContent.replace(/{%\s*timeline\s*%}/g, `:::timeline`);
-    newContent = newContent.replace(/{%\s*endtimeline\s*%}/g, `:::`);
+    // --- 2. Folding Tag ---
+    // {% folding [color:yellow] [child:codeblock] [open:false] title %}
+    newContent = newContent.replace(
+        /{%\s*folding\s+(.*?)\s*%}([\s\S]*?){%\s*endfolding\s*%}/g,
+        (match, args, body) => {
+            const argParts = args.trim().split(/\s+/);
+            let color = '';
+            let titleParts: string[] = [];
+            let isOpen = false;
+            let child = '';
+
+            argParts.forEach(part => {
+                if (part.includes(':')) {
+                    const [k, v] = part.split(':');
+                    if (k === 'color') color = v;
+                    if (k === 'open') isOpen = v === 'true';
+                    if (k === 'child') child = v;
+                } else {
+                    titleParts.push(part);
+                }
+            });
+            const title = titleParts.join(' ');
+
+            return `
+<details class="tag-plugin colorful folding" ${color ? `color="${color}"` : ''} ${child ? `child="${child}"` : ''} ${isOpen ? 'open' : ''}>
+  <summary>${title}</summary>
+  <div class="body">
+    ${body}
+  </div>
+</details>
+`;
+        }
+    );
+
+    // --- 3. Timeline ---
+    newContent = newContent.replace(
+        /{%\s*timeline\s*(.*?)\s*%}([\s\S]*?){%\s*endtimeline\s*%}/g,
+        (match, args, body) => {
+            // Parse nodes: <!-- node header --> body
+            const nodes = body.split(/<!--\s*node (.*?)\s*-->/);
+            // Result: [preamble, header1, body1, header2, body2...]
+
+            let html = `<div class="tag-plugin timeline">`;
+
+            for (let i = 1; i < nodes.length; i += 2) {
+                const header = nodes[i];
+                const content = nodes[i + 1]; // This is markdown content
+                html += `
+              <div class="timenode" index="${(i - 1) / 2}">
+                  <div class="header">${header ? `<span>${header}</span>` : ''}</div>
+                  <div class="body fs14">${content}</div>
+              </div>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+    );
+
+    // --- 4. Grid ---
+    newContent = newContent.replace(
+        /{%\s*grid\s*(.*?)\s*%}([\s\S]*?){%\s*endgrid\s*%}/g,
+        (match, args, body) => {
+            const argMap: any = {};
+            args.trim().split(/\s+/).forEach(part => {
+                const [k, v] = part.split(':');
+                if (k && v) argMap[k] = v;
+            });
+
+            const w = argMap.w || (argMap.c ? null : '240px');
+            let style = '';
+            if (w) style += `grid-template-columns: repeat(auto-fill, minmax(${w}, 1fr));`;
+            else if (argMap.c) style += `grid-template-columns: repeat(${argMap.c}, 1fr);`;
+            if (argMap.gap) style += `grid-gap:${argMap.gap};`;
+
+            const cells = body.split(/<!--\s*cell\s*-->/);
+            let cellsHtml = '';
+            cells.forEach(cell => {
+                if (cell.trim()) {
+                    cellsHtml += `<div class="cell" style="${argMap.br ? `border-radius:${argMap.br};` : ''}">${cell}</div>`;
+                }
+            });
+
+            return `<div class="tag-plugin grid" style="${style}" ${argMap.bg ? `bg="${argMap.bg}"` : ''}>${cellsHtml}</div>`;
+        }
+    );
+
+    // --- 5. Tabs ---
+    newContent = newContent.replace(
+        /{%\s*tabs\s*(.*?)\s*%}([\s\S]*?){%\s*endtabs\s*%}/g,
+        (match, args, body) => {
+            const parts = body.split(/<!--\s*tab (.*?)\s*-->/);
+
+            let nav = '<div class="nav-tabs">';
+            let contentHtml = '<div class="tab-content">';
+            let idBase = 'tab-' + Math.random().toString(36).substr(2, 9);
+
+            for (let i = 1; i < parts.length; i += 2) {
+                const title = parts[i];
+                const content = parts[i + 1];
+                const activeClass = i === 1 ? ' active' : '';
+                const id = `${idBase}-${i}`;
+
+                // Use onclick handler bound to window
+                nav += `<div class="tab${activeClass}" data-href="${id}"><a href="javascript:;" onclick="selectTab('${id}')">${title}</a></div>`;
+                contentHtml += `<div class="tab-pane${activeClass}" id="${id}">${content}</div>`;
+            }
+            nav += '</div>';
+            contentHtml += '</div>';
+
+            return `<div class="tag-plugin tabs" id="${idBase}">${nav}${contentHtml}</div>`;
+        }
+    );
 
     return newContent;
+};
+
+// Client-side script for Tabs and interactions
+const Scripts = () => {
+    useEffect(() => {
+        // Expose selectTab globally
+        (window as any).selectTab = (id: string) => {
+            const pane = document.getElementById(id);
+            if (!pane) return;
+            const wrapper = pane.closest('.tag-plugin.tabs');
+            if (!wrapper) return;
+
+            // Toggle Nav
+            wrapper.querySelectorAll('.nav-tabs .tab').forEach((el: Element) => {
+                if (el.getAttribute('data-href') === id) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+
+            // Toggle Content
+            wrapper.querySelectorAll('.tab-content .tab-pane').forEach((el: Element) => {
+                if (el.id === id) el.classList.add('active');
+                else el.classList.remove('active');
+            });
+        };
+    }, []);
+    return null;
 };
 
 export default function StellarMarkdown({ content }: { content: string }) {
     const processedContent = preprocessContent(content);
 
     return (
-        <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkDirective, remarkStellarDirectives]}
-            rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug, rehypeStellarStructure]}
-            components={{
-                img: (props) => (
-                    // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-                    <img
-                        {...props}
-                        referrerPolicy="no-referrer"
-                        style={{
-                            maxWidth: '100%',
-                            borderRadius: '8px',
-                            display: 'block',
-                            margin: '1em auto'
-                        }}
-                    />
-                ),
-                // Add custom renderers for timeline lists if needed
-                div: (props) => {
-                    const { node, className, children, ...rest } = props;
-
-                    // Custom transform for Timeline Lists
-                    if (className?.includes('timeline')) {
-                        // If children contains a UL, we might want to unwrap it or style it
-                        return <div className={className} {...rest}>{children}</div>;
-                    }
-                    return <div className={className} {...rest}>{children}</div>;
-                }
-            }}
-        >
-            {processedContent}
-        </ReactMarkdown>
+        <>
+            <Scripts />
+            <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkDirective]}
+                rehypePlugins={[rehypeRaw, rehypeHighlight, rehypeSlug]}
+                components={{
+                    img: (props) => (
+                        // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
+                        <img
+                            {...props}
+                            referrerPolicy="no-referrer"
+                            style={{
+                                maxWidth: '100%',
+                                borderRadius: '8px',
+                                display: 'block',
+                                margin: '1em auto'
+                            }}
+                        />
+                    ),
+                    div: ({ node, ...props }) => <div {...props} />
+                }}
+            >
+                {processedContent}
+            </ReactMarkdown>
+        </>
     );
 }
