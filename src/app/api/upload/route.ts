@@ -20,8 +20,10 @@ export async function POST(req: Request) {
         let env: CloudflareEnv = {};
         try {
             // @ts-ignore
-            const { getRequestContext } = await import('@cloudflare/next-on-pages');
-            env = getRequestContext().env as CloudflareEnv;
+            if (process.env.NODE_ENV === 'production') {
+                const { getRequestContext } = await import('@cloudflare/next-on-pages');
+                env = getRequestContext().env as CloudflareEnv;
+            }
         } catch (e) {
             // 本地开发环境或非 CF 环境，尝试读取 process.env
             env = process.env as any;

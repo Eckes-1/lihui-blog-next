@@ -7,7 +7,7 @@ import { FileText, Plus } from "lucide-react";
 export default async function AdminDashboard() {
     let postCount = 0;
     try {
-        const res = await db.execute("SELECT COUNT(*) as c FROM posts");
+        const res = await db.execute({ sql: "SELECT COUNT(*) as c FROM posts" });
         // @ts-ignore
         postCount = res.rows[0]?.c || 0;
     } catch (e) {

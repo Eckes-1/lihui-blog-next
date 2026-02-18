@@ -40,6 +40,7 @@ class DatabaseAdapter {
             // 动态导入以避免在 Node 环境下报错
             // @ts-ignore
             if (process.env.NODE_ENV === 'production') {
+                 // @ts-ignore
                  const { getRequestContext } = await import('@cloudflare/next-on-pages');
                  const env = getRequestContext().env as CloudflareEnv;
             
