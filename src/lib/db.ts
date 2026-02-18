@@ -30,50 +30,60 @@ class DatabaseAdapter {
 
     /**
      * 统一执行 SQL 查询
-     * @param options { sql: string, args?: any[] | object }
+     * @param options { sql: string, args?: any[] | object } 或纯 SQL 字符串
+     * @param args 当第一个参数为字符串时，可选的参数数组
      */
-    async execute(options: { sql: string, args?: any }) {
-        const { sql, args } = options;
+    async execute(options: string | { sql: string, args?: any }, args?: any) {
+        let sql: string;
+        let sqlArgs: any;
+
+        if (typeof options === 'string') {
+            sql = options;
+            sqlArgs = args;
+        } else {
+            sql = options.sql;
+            sqlArgs = options.args;
+        }
 
         // 1. 尝试使用 Cloudflare D1
         try {
             // 动态导入以避免在 Node 环境下报错
             // @ts-ignore
             if (process.env.NODE_ENV === 'production') {
-                 // @ts-ignore
-                 const { getRequestContext } = await import('@cloudflare/next-on-pages');
-                 const env = getRequestContext().env as CloudflareEnv;
-            
-                 if (env && env.DB) {
-                     // D1 模式
-                     const stmt = env.DB.prepare(sql);
-                     let result;
+                // @ts-ignore
+                const { getRequestContext } = await import('@cloudflare/next-on-pages');
+                const env = getRequestContext().env as CloudflareEnv;
 
-                     // 处理参数
-                     if (args) {
-                         if (Array.isArray(args)) {
-                             // 位置参数 [1, "test"]
-                             result = await stmt.bind(...args).all();
-                         } else {
-                             // 命名参数 { slug: "test" }
-                             if (Object.keys(args).length > 0 && sql.includes(':')) {
-                                 const { newSql, newArgs } = this.convertNamedParams(sql, args);
-                                 result = await env.DB.prepare(newSql).bind(...newArgs).all();
-                             } else {
-                                  // 空对象或无匹配
-                                  result = await stmt.all();
-                             }
-                         }
-                     } else {
-                         result = await stmt.all();
-                     }
+                if (env && env.DB) {
+                    // D1 模式
+                    const stmt = env.DB.prepare(sql);
+                    let result;
 
-                     return {
-                         rows: result.results || [],
-                         columns: [], 
-                         toJSON: () => result
-                     };
-                 }
+                    // 处理参数
+                    if (sqlArgs) {
+                        if (Array.isArray(sqlArgs)) {
+                            // 位置参数 [1, "test"]
+                            result = await stmt.bind(...sqlArgs).all();
+                        } else {
+                            // 命名参数 { slug: "test" }
+                            if (Object.keys(sqlArgs).length > 0 && sql.includes(':')) {
+                                const { newSql, newArgs } = this.convertNamedParams(sql, sqlArgs);
+                                result = await env.DB.prepare(newSql).bind(...newArgs).all();
+                            } else {
+                                // 空对象或无匹配
+                                result = await stmt.all();
+                            }
+                        }
+                    } else {
+                        result = await stmt.all();
+                    }
+
+                    return {
+                        rows: result.results || [],
+                        columns: [],
+                        toJSON: () => result
+                    };
+                }
             }
         } catch (e) {
             // 忽略 CF 环境获取失败，继续尝试本地
@@ -85,7 +95,7 @@ class DatabaseAdapter {
         if (!client) {
             throw new Error("Database configuration missing. Please set TURSO_DATABASE_URL or configure Cloudflare D1.");
         }
-        return client.execute(options);
+        return client.execute({ sql, args: sqlArgs });
     }
 
     // 简单的命名参数转位置参数辅助函数
