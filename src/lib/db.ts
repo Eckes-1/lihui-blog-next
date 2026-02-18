@@ -39,56 +39,40 @@ class DatabaseAdapter {
         try {
             // 动态导入以避免在 Node 环境下报错
             // @ts-ignore
-            const { getRequestContext } = await import('@cloudflare/next-on-pages');
-            const env = getRequestContext().env as CloudflareEnv;
+            if (process.env.NODE_ENV === 'production') {
+                 const { getRequestContext } = await import('@cloudflare/next-on-pages');
+                 const env = getRequestContext().env as CloudflareEnv;
             
-            if (env && env.DB) {
-                // D1 模式
-                const stmt = env.DB.prepare(sql);
-                let result;
+                 if (env && env.DB) {
+                     // D1 模式
+                     const stmt = env.DB.prepare(sql);
+                     let result;
 
-                // 处理参数
-                if (args) {
-                    if (Array.isArray(args)) {
-                        // 位置参数 [1, "test"]
-                        result = await stmt.bind(...args).all();
-                    } else {
-                        // 命名参数 { slug: "test" }
-                        // D1 目前对命名参数支持有限，建议转换为位置参数或直接使用
-                        // 如果 SQL 中使用了 :slug，D1 可能不支持，这里做简单的参数绑定尝试
-                        // 注意：为了兼容性，建议 SQL 尽量使用 ? 占位符
-                        
-                        // 尝试直接传递对象 (某些 D1 兼容层支持，原生可能不支持)
-                        // 如果失败，回退到 LibSQL (但在 CF 环境下 LibSQL 也会失败如果没配 Turso)
-                        
-                        // 简单策略：目前项目代码主要混用。
-                        // 如果是对象参数，尝试按键值顺序绑定（极不安全），或者依赖 D1 最新版的命名参数支持
-                        // 实际上 D1 现在的 .bind() 还不支持对象。
-                        // 如果遇到对象参数，我们需要解析 SQL 找出参数顺序。这太复杂了。
-                        // 假设：用户会修改 SQL 为 ? 风格，或者 D1 更新支持。
-                        // 临时方案：如果检测到对象参数，且 SQL 包含 :key，尝试替换 SQL 为 ? 并提取值
-                        
-                        if (Object.keys(args).length > 0 && sql.includes(':')) {
-                            const { newSql, newArgs } = this.convertNamedParams(sql, args);
-                            result = await env.DB.prepare(newSql).bind(...newArgs).all();
-                        } else {
-                             // 空对象或无匹配
-                             result = await stmt.all();
-                        }
-                    }
-                } else {
-                    result = await stmt.all();
-                }
+                     // 处理参数
+                     if (args) {
+                         if (Array.isArray(args)) {
+                             // 位置参数 [1, "test"]
+                             result = await stmt.bind(...args).all();
+                         } else {
+                             // 命名参数 { slug: "test" }
+                             if (Object.keys(args).length > 0 && sql.includes(':')) {
+                                 const { newSql, newArgs } = this.convertNamedParams(sql, args);
+                                 result = await env.DB.prepare(newSql).bind(...newArgs).all();
+                             } else {
+                                  // 空对象或无匹配
+                                  result = await stmt.all();
+                             }
+                         }
+                     } else {
+                         result = await stmt.all();
+                     }
 
-                // 适配返回值格式，使其与 LibSQL 兼容
-                // LibSQL: { rows: [{...}], columns: [...] }
-                // D1: { results: [{...}], ... }
-                return {
-                    rows: result.results || [],
-                    columns: [], // D1 通常不返回 columns 元数据，某些 UI 可能受影响，但后端逻辑通常只用 rows
-                    // 模拟 LibSQL 的其他属性
-                    toJSON: () => result
-                };
+                     return {
+                         rows: result.results || [],
+                         columns: [], 
+                         toJSON: () => result
+                     };
+                 }
             }
         } catch (e) {
             // 忽略 CF 环境获取失败，继续尝试本地

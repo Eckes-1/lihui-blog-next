@@ -6,7 +6,7 @@ import StellarMarkdown from "@/app/components/StellarMarkdown";
 import { savePost } from "@/app/lib/actions";
 import { Save, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import "../../admin.css";
+import "../../../admin.css";
 
 export default function EditorClient({ post }: { post?: any }) {
     const [content, setContent] = useState(post?.content || "");

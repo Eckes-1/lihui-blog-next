@@ -74,7 +74,13 @@ export async function POST(req: Request) {
         }
 
         // 方案 3: 本地文件系统 (仅 Node.js / 本地开发环境)
+        // 注意: Edge Runtime 不支持 fs/promises 和 path，因此必须动态导入并进行环境检查
         try {
+            // 在 Edge Runtime 中，这些导入会失败或 process.cwd 不存在
+            if (process.env.NEXT_RUNTIME === 'edge') {
+                 throw new Error("Local file system is not supported in Edge Runtime.");
+            }
+
             const fs = await import('fs/promises');
             const path = await import('path');
             
@@ -90,9 +96,9 @@ export async function POST(req: Request) {
 
             return NextResponse.json({ url: `/uploads/${filename}` });
         } catch (e) {
-            console.error("Local file write failed:", e);
+            // console.error("Local file write failed:", e);
             return NextResponse.json({ 
-                error: "上传失败：未配置存储后端 (R2 或 GitHub)。Cloudflare Pages 无法直接写入本地文件。" 
+                error: "上传失败：当前环境 (Edge/Cloudflare) 不支持本地文件写入，且未配置 R2 或 GitHub 存储。" 
             }, { status: 500 });
         }
 
