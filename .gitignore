@@ -20,6 +20,9 @@
 # production
 /build
 
+# uploads (should use R2 or external storage in production)
+/public/uploads
+
 # misc
 .DS_Store
 *.pem
