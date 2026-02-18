@@ -3,7 +3,6 @@ export const runtime = 'edge';
 
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { Resend } from 'resend';
 
 export async function POST(req: Request) {
     try {
@@ -27,35 +26,43 @@ export async function POST(req: Request) {
             args: [email, code, expiresAt, Date.now()]
         });
 
-        // Send Email via Resend
+        // Send Email via Resend REST API (using fetch instead of SDK for Edge compatibility)
         const resendApiKey = process.env.RESEND_API_KEY;
 
         if (resendApiKey) {
-            const resend = new Resend(resendApiKey);
             const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
-            const { data, error } = await resend.emails.send({
-                from: fromEmail,
-                to: email,
-                subject: '后台登录验证码',
-                html: `
-                    <div style="font-family: sans-serif; padding: 20px; color: #333;">
-                        <h2 style="color: #3b82f6;">后台管理系统登录</h2>
-                        <p>您的验证码是：</p>
-                        <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0;">
-                            ${code}
+            const resendResponse = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${resendApiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    from: fromEmail,
+                    to: email,
+                    subject: '后台登录验证码',
+                    html: `
+                        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+                            <h2 style="color: #3b82f6;">后台管理系统登录</h2>
+                            <p>您的验证码是：</p>
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; text-align: center; margin: 20px 0;">
+                                ${code}
+                            </div>
+                            <p>验证码有效期为 5 分钟。</p>
+                            <p style="color: #666; font-size: 12px; margin-top: 30px;">如果您没有请求此代码，请忽略此邮件。</p>
                         </div>
-                        <p>验证码有效期为 5 分钟。</p>
-                        <p style="color: #666; font-size: 12px; margin-top: 30px;">如果您没有请求此代码，请忽略此邮件。</p>
-                    </div>
-                `,
+                    `,
+                }),
             });
 
-            if (error) {
-                console.error('[Resend Error]', error);
+            if (!resendResponse.ok) {
+                const errorData = await resendResponse.json();
+                console.error('[Resend Error]', errorData);
                 throw new Error('Failed to send email via Resend');
             }
 
+            const data = await resendResponse.json() as any;
             console.log(`[Resend] Code sent to ${email} (ID: ${data?.id})`);
         } else {
             // Dev mode: Log code to console if RESEND_API_KEY not configured
