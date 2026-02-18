@@ -5,6 +5,8 @@ import "./stellar.css";
 import "./highlight.css";
 import ThemeProvider from "./components/ThemeProvider";
 
+export const runtime = 'edge';
+
 export const metadata: Metadata = {
   title: "LIHUI",
   description: "分享技术与生活",
