@@ -51,12 +51,13 @@ class DatabaseAdapter {
             // @ts-ignore
             if (process.env.NODE_ENV === 'production') {
                 // @ts-ignore
-                const { getRequestContext } = await import('@cloudflare/next-on-pages');
-                const env = getRequestContext().env as CloudflareEnv;
+                const { getCloudflareContext } = await import('@opennextjs/cloudflare');
+                const { env } = await getCloudflareContext();
+                const cfEnv = env as CloudflareEnv;
 
-                if (env && env.DB) {
+                if (cfEnv && cfEnv.DB) {
                     // D1 模式
-                    const stmt = env.DB.prepare(sql);
+                    const stmt = cfEnv.DB.prepare(sql);
                     let result;
 
                     // 处理参数
@@ -68,7 +69,7 @@ class DatabaseAdapter {
                             // 命名参数 { slug: "test" }
                             if (Object.keys(sqlArgs).length > 0 && sql.includes(':')) {
                                 const { newSql, newArgs } = this.convertNamedParams(sql, sqlArgs);
-                                result = await env.DB.prepare(newSql).bind(...newArgs).all();
+                                result = await cfEnv.DB.prepare(newSql).bind(...newArgs).all();
                             } else {
                                 // 空对象或无匹配
                                 result = await stmt.all();

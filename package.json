@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx @cloudflare/next-on-pages"
+    "pages:build": "npx @opennextjs/cloudflare"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
@@ -36,6 +36,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.16.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.9",

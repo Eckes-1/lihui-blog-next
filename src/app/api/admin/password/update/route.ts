@@ -1,6 +1,4 @@
 
-export const runtime = 'edge';
-
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
