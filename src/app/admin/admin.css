@@ -1,5 +1,28 @@
 /* Admin Panel Specific Styles */
 
+/* Responsive Content Padding */
+.admin-main-content {
+    padding: 24px;
+}
+
+@media (max-width: 768px) {
+    .admin-main-content {
+        padding: 4px;
+    }
+
+    .card {
+        margin: 0 !important;
+        width: 100% !important;
+        border-radius: 8px !important;
+        /* Slightly smaller radius */
+    }
+
+    .card-body,
+    .card-header {
+        padding: 12px !important;
+    }
+}
+
 :root {
     --admin-bg: #f5f7fa;
     --admin-card: #ffffff;
@@ -36,7 +59,10 @@
 
 .admin-layout {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    /* Fixed height to viewport */
+    overflow: hidden;
+    /* Prevent body scroll */
     background: var(--admin-bg);
     color: var(--admin-text-main);
     font-family: system-ui, -apple-system, sans-serif;
@@ -52,9 +78,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    position: sticky;
-    top: 0;
-    height: 100vh;
+    height: 100%;
+    /* Fill parent */
+    overflow-y: auto;
+    /* Independent scroll */
     z-index: 10;
 }
 
@@ -93,8 +120,10 @@
     flex: 1;
     padding: 2rem;
     overflow-y: auto;
+    /* Independent scroll */
+    height: 100%;
+    /* Fill parent */
     min-width: 0;
-    /* Prevent flex overflow */
 }
 
 .admin-header {
@@ -232,4 +261,67 @@ textarea.markdown-editor {
     border-color: var(--admin-primary);
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* =========================================
+   Compact Mode Overrides
+   ========================================= */
+
+body.compact-mode .admin-main {
+    padding: 1rem !important;
+}
+
+body.compact-mode .admin-header {
+    margin-bottom: 1rem !important;
+}
+
+body.compact-mode .admin-header h1 {
+    font-size: 1.25rem !important;
+}
+
+body.compact-mode .nav-item {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.85rem !important;
+    gap: 0.5rem !important;
+}
+
+body.compact-mode .data-table th,
+body.compact-mode .data-table td {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.85rem !important;
+}
+
+body.compact-mode .card,
+body.compact-mode .editor-pane,
+body.compact-mode .preview-pane {
+    border-radius: 6px !important;
+}
+
+body.compact-mode .form-input,
+body.compact-mode .search-input {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.85rem !important;
+}
+
+body.compact-mode .admin-page-container {
+    padding-bottom: 20px !important;
+}
+
+/* Override inline styles if necessary (less clean but needed here) */
+body.compact-mode .card {
+    padding: 16px !important;
+}
+
+body.compact-mode header {
+    height: 48px !important;
+    padding: 0 16px !important;
+}
+
+body.compact-mode .admin-sidebar {
+    padding: 1rem 0.5rem !important;
+}
+
+body.compact-mode .admin-sidebar h2 {
+    margin-bottom: 1rem !important;
+    font-size: 1rem !important;
 }

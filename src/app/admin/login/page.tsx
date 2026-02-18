@@ -1,44 +1,38 @@
 
-"use client";
+import LoginForm from "./LoginForm";
+import { db } from "@/lib/db";
 
-import { authenticate } from "@/app/lib/auth-actions"; // Fixed import path
-import { useActionState } from "react";
-import "../admin.css";
+export const dynamic = "force-dynamic";
 
-export default function LoginPage() {
-    const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+export default async function LoginPage() {
+    let bgUrl = "";
+    let bgOpacity = 85;
+    let formOpacity = 100;
+    let bgTitle = "后台登录";
+    let bgSubtitle = "请输入详细信息以完成安全登录";
 
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--theme-bg)' }}>
-            <form action={formAction} className="login-card" style={{ padding: '2rem', background: 'var(--card-bg)', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', width: '320px' }}>
-                <h2 style={{ marginBottom: '1.5rem', textAlign: 'center', fontWeight: 'bold' }}>后台登录</h2>
+    try {
+        const rs = await db.execute({
+            sql: "SELECT key, value FROM settings WHERE key IN ('login_bg_url', 'login_bg_opacity', 'login_form_opacity', 'login_title', 'login_subtitle')",
+            args: []
+        });
 
-                <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>密码</label>
-                    <input
-                        name="password"
-                        type="password"
-                        required
-                        className="form-input"
-                        placeholder="请输入管理员密码"
-                    />
-                </div>
+        rs.rows.forEach(row => {
+            if (row.key === 'login_bg_url') bgUrl = row.value as string;
+            if (row.key === 'login_bg_opacity') bgOpacity = Number(row.value);
+            if (row.key === 'login_form_opacity') formOpacity = Number(row.value);
+            if (row.key === 'login_title') bgTitle = row.value as string;
+            if (row.key === 'login_subtitle') bgSubtitle = row.value as string;
+        });
+    } catch (error) {
+        console.error("Failed to fetch login settings:", error);
+    }
 
-                <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={isPending}
-                    style={{ width: '100%', justifyContent: 'center', marginTop: '1rem' }}
-                >
-                    {isPending ? '验证中...' : '登录'}
-                </button>
-
-                {errorMessage && (
-                    <div style={{ marginTop: '1rem', color: 'red', fontSize: '0.9rem', textAlign: 'center' }}>
-                        {errorMessage}
-                    </div>
-                )}
-            </form>
-        </div>
-    );
+    return <LoginForm
+        loginBgUrl={bgUrl}
+        loginBgOpacity={bgOpacity}
+        loginFormOpacity={formOpacity}
+        loginTitle={bgTitle}
+        loginSubtitle={bgSubtitle}
+    />;
 }
