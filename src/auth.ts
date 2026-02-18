@@ -31,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             throw new Error("图形验证码错误");
                         }
                     } catch (e: any) {
-                        if (e.message === "图形验证码错误") return null;
+                        if (e.message === "图形验证码错误") throw e;
                         console.warn("[Auth] Cookie access failed during captcha check", e);
                         return null;
                     }

@@ -12,7 +12,7 @@ export default function LeftSidebar() {
                     <div className="logo-wrap">
                         <Link className="avatar" href="/about">
                             <div className="bg" style={{ opacity: 0, backgroundImage: "url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp)" }}></div>
-                            <img className="avatar" src="/images/avatar.jpg" alt="avatar" />
+                            <Image className="avatar" src="/images/avatar.jpg" alt="avatar" width={128} height={128} />
                         </Link>
                         <Link className="title" href="/">
                             <div className="main">LIHUI</div>

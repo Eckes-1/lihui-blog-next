@@ -92,7 +92,7 @@ class DatabaseAdapter {
             }
         } catch (e) {
             // 忽略 CF 环境获取失败，继续尝试本地
-            // console.log("D1 execution failed or not available, falling back to LibSQL", e);
+            console.log("D1 execution failed or not available, falling back to LibSQL", e);
         }
 
         // 2. 回退到 Turso / LibSQL

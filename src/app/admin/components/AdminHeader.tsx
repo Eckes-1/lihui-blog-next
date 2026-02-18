@@ -138,7 +138,7 @@ export default function AdminHeader() {
 
                 {/* Desktop Breadcrumbs */}
                 <div className="breadcrumbs desktop-only">
-                    <Link href="/admin" className="home-link" title="回到首页">
+                    <Link href="/admin" className="home-link" title="控制台">
                         <Home size={18} />
                     </Link>
 
