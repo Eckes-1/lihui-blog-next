@@ -23,6 +23,9 @@
 # uploads (should use R2 or external storage in production)
 /public/uploads
 
+# build logs
+build-log*.txt
+
 # misc
 .DS_Store
 *.pem
