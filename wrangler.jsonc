@@ -10,12 +10,17 @@
         "directory": ".open-next/assets",
         "binding": "ASSETS"
     },
-    // D1 Database Binding
+    // D1 Database
     "d1_databases": [
         {
             "binding": "DB",
             "database_name": "blog-next-db",
             "database_id": "fea11a3d-92fe-4350-9a55-07d714cff0e4"
         }
-    ]
+    ],
+    // Non-sensitive environment variables
+    "vars": {
+        "NODE_ENV": "production",
+        "AUTH_URL": "https://blog-next.2707437178.workers.dev"
+    }
 }
