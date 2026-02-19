@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx @opennextjs/cloudflare build && node scripts/prepare-pages.js"
+    "deploy": "npx @opennextjs/cloudflare build && npx wrangler deploy",
+    "preview": "npx @opennextjs/cloudflare build && npx wrangler dev"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
