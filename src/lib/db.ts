@@ -1,6 +1,4 @@
 
-import { createClient } from "@libsql/client";
-
 /**
  * 数据库客户端适配器
  * 自动适配 Cloudflare D1 (生产环境) 和 Turso/LibSQL (本地/Node环境)
@@ -8,7 +6,7 @@ import { createClient } from "@libsql/client";
 class DatabaseAdapter {
     private libsqlClient: any = null;
 
-    private getLibSQLClient() {
+    private async getLibSQLClient() {
         if (this.libsqlClient) return this.libsqlClient;
 
         const url = process.env.TURSO_DATABASE_URL;
@@ -20,6 +18,8 @@ class DatabaseAdapter {
         }
 
         if (url) {
+            // 动态导入 @libsql/client，避免在 Cloudflare Workers 中加载失败
+            const { createClient } = await import("@libsql/client");
             this.libsqlClient = createClient({
                 url,
                 authToken,
@@ -92,7 +92,7 @@ class DatabaseAdapter {
         }
 
         // 2. 回退到 Turso / LibSQL
-        const client = this.getLibSQLClient();
+        const client = await this.getLibSQLClient();
         if (!client) {
             throw new Error("Database configuration missing. Please set TURSO_DATABASE_URL or configure Cloudflare D1.");
         }

@@ -1,0 +1,236 @@
+{
+    "wallTime": 11,
+    "cpuTime": 11,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "c81165ca-601d-4226-bc10-2eb938be3130"
+    },
+    "scriptName": "blog-next",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [
+        {
+            "message": [
+                "Error: Failed to load external module @libsql/client-6da938047d5fc1cd: Error: No such module \"@libsql/client-6da938047d5fc1cd\"."
+            ],
+            "level": "error",
+            "timestamp": 1771558245413
+        },
+        {
+            "message": [
+                "猕?,
+                "Error: Failed to load external module @libsql/client-6da938047d5fc1cd: Error: No such module \"@libsql/client-6da938047d5fc1cd\"."
+            ],
+            "level": "error",
+            "timestamp": 1771558245413
+        }
+    ],
+    "eventTimestamp": 1771558245411,
+    "event": {
+        "request": {
+            "url": "https://blog-next.2707437178.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, br",
+                "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+                "cache-control": "max-age=0",
+                "cf-connecting-ip": "212.135.212.77",
+                "cf-ipcountry": "JP",
+                "cf-ray": "9d0aed59cf4ad50c",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "blog-next.2707437178.workers.dev",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "212.135.212.77"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/2",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "weight=256;exclusive=1",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 1,
+                "colo": "NRT",
+                "asn": 216211,
+                "asOrganization": "CYBERVERSE_JP",
+                "country": "JP",
+                "isEUCountry": false,
+                "city": "Ebara",
+                "continent": "AS",
+                "region": "Tokyo",
+                "regionCode": "13",
+                "timezone": "Asia/Tokyo",
+                "longitude": "139.7486",
+                "latitude": "35.617",
+                "postalCode": "140-0002",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "OcP0CcoqBVHcqFs4RykexP0XhnHyGQKuXk1rKQ3D0SI=",
+                "tlsClientCiphersSha1": "nWmr2CuvhM3+1BAitb/WHA2q9wk=",
+                "tlsClientExtensionsSha1": "B9t+b87nlwmPtejYdZ0D+eichFE=",
+                "tlsClientExtensionsSha1Le": "rwR1e61ulAJABjsism920EY93bg=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "94ec063b7ca41db983bc30e19323f1a888713f48efd820b8762ea2218601cb1f",
+                    "serverHandshake": "bf07d06c800ff2452b96244d0e4d6d00324e7cc1f456db2f96a8cb043f877087",
+                    "clientFinished": "4838a8d7584cbfd2f624040d8d44cac6af639c40188a6f2b2992eb4e03776252",
+                    "serverFinished": "cbf3520abc6fd1f7d313e758cac676f315b46e3c8132abe60c497d5ba9dac618"
+                },
+                "tlsClientHelloLength": "2068",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": ""
+                },
+                "verifiedBotCategory": ""
+            }
+        },
+        "response": {
+            "status": 500
+        }
+    }
+}
+{
+    "wallTime": 8,
+    "cpuTime": 8,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "c81165ca-601d-4226-bc10-2eb938be3130"
+    },
+    "scriptName": "blog-next",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [
+        {
+            "message": [
+                "Error: Failed to load external module @libsql/client-6da938047d5fc1cd: Error: No such module \"@libsql/client-6da938047d5fc1cd\"."
+            ],
+            "level": "error",
+            "timestamp": 1771558247173
+        },
+        {
+            "message": [
+                "猕?,
+                "Error: Failed to load external module @libsql/client-6da938047d5fc1cd: Error: No such module \"@libsql/client-6da938047d5fc1cd\"."
+            ],
+            "level": "error",
+            "timestamp": 1771558247173
+        }
+    ],
+    "eventTimestamp": 1771558247173,
+    "event": {
+        "request": {
+            "url": "https://blog-next.2707437178.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, br",
+                "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+                "cache-control": "max-age=0",
+                "cf-connecting-ip": "212.135.212.77",
+                "cf-ipcountry": "JP",
+                "cf-ray": "9d0aed64c977d50c",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "blog-next.2707437178.workers.dev",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "cross-site",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "212.135.212.77"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/2",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "weight=256;exclusive=1",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 1,
+                "colo": "NRT",
+                "asn": 216211,
+                "asOrganization": "CYBERVERSE_JP",
+                "country": "JP",
+                "isEUCountry": false,
+                "city": "Ebara",
+                "continent": "AS",
+                "region": "Tokyo",
+                "regionCode": "13",
+                "timezone": "Asia/Tokyo",
+                "longitude": "139.7486",
+                "latitude": "35.617",
+                "postalCode": "140-0002",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "OcP0CcoqBVHcqFs4RykexP0XhnHyGQKuXk1rKQ3D0SI=",
+                "tlsClientCiphersSha1": "nWmr2CuvhM3+1BAitb/WHA2q9wk=",
+                "tlsClientExtensionsSha1": "B9t+b87nlwmPtejYdZ0D+eichFE=",
+                "tlsClientExtensionsSha1Le": "rwR1e61ulAJABjsism920EY93bg=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "94ec063b7ca41db983bc30e19323f1a888713f48efd820b8762ea2218601cb1f",
+                    "serverHandshake": "bf07d06c800ff2452b96244d0e4d6d00324e7cc1f456db2f96a8cb043f877087",
+                    "clientFinished": "4838a8d7584cbfd2f624040d8d44cac6af639c40188a6f2b2992eb4e03776252",
+                    "serverFinished": "cbf3520abc6fd1f7d313e758cac676f315b46e3c8132abe60c497d5ba9dac618"
+                },
+                "tlsClientHelloLength": "2068",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": ""
+                },
+                "verifiedBotCategory": ""
+            }
+        },
+        "response": {
+            "status": 500
+        }
+    }
+}
