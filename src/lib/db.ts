@@ -12,7 +12,6 @@ class DatabaseAdapter {
         const url = process.env.TURSO_DATABASE_URL;
         const authToken = process.env.TURSO_AUTH_TOKEN;
 
-        // 如果没有配置 Turso，但也没在 CF 环境，抛出友好错误
         if (!url && process.env.NODE_ENV !== 'production') {
             console.warn("⚠️ Warning: TURSO_DATABASE_URL not set. Database operations may fail locally.");
         }
@@ -30,8 +29,6 @@ class DatabaseAdapter {
 
     /**
      * 统一执行 SQL 查询
-     * @param options { sql: string, args?: any[] | object } 或纯 SQL 字符串
-     * @param args 当第一个参数为字符串时，可选的参数数组
      */
     async execute(options: string | { sql: string, args?: any }, args?: any) {
         let sql: string;
@@ -47,48 +44,38 @@ class DatabaseAdapter {
 
         // 1. 尝试使用 Cloudflare D1
         try {
-            // 动态导入以避免在 Node 环境下报错
             // @ts-ignore
-            if (process.env.NODE_ENV === 'production') {
-                // @ts-ignore
-                const { getCloudflareContext } = await import('@opennextjs/cloudflare');
-                const { env } = await getCloudflareContext();
-                const cfEnv = env as CloudflareEnv;
+            const { getCloudflareContext } = await import('@opennextjs/cloudflare');
+            const { env } = await getCloudflareContext();
+            const cfEnv = env as CloudflareEnv;
 
-                if (cfEnv && cfEnv.DB) {
-                    // D1 模式
-                    const stmt = cfEnv.DB.prepare(sql);
-                    let result;
+            if (cfEnv && cfEnv.DB) {
+                const stmt = cfEnv.DB.prepare(sql);
+                let result;
 
-                    // 处理参数
-                    if (sqlArgs) {
-                        if (Array.isArray(sqlArgs)) {
-                            // 位置参数 [1, "test"]
-                            result = await stmt.bind(...sqlArgs).all();
-                        } else {
-                            // 命名参数 { slug: "test" }
-                            if (Object.keys(sqlArgs).length > 0 && sql.includes(':')) {
-                                const { newSql, newArgs } = this.convertNamedParams(sql, sqlArgs);
-                                result = await cfEnv.DB.prepare(newSql).bind(...newArgs).all();
-                            } else {
-                                // 空对象或无匹配
-                                result = await stmt.all();
-                            }
-                        }
+                if (sqlArgs) {
+                    if (Array.isArray(sqlArgs)) {
+                        result = await stmt.bind(...sqlArgs).all();
                     } else {
-                        result = await stmt.all();
+                        if (Object.keys(sqlArgs).length > 0 && sql.includes(':')) {
+                            const { newSql, newArgs } = this.convertNamedParams(sql, sqlArgs);
+                            result = await cfEnv.DB.prepare(newSql).bind(...newArgs).all();
+                        } else {
+                            result = await stmt.all();
+                        }
                     }
-
-                    return {
-                        rows: result.results || [],
-                        columns: [],
-                        toJSON: () => result
-                    };
+                } else {
+                    result = await stmt.all();
                 }
+
+                return {
+                    rows: result.results || [],
+                    columns: [],
+                    toJSON: () => result
+                };
             }
         } catch (e) {
-            // 忽略 CF 环境获取失败，继续尝试本地
-            console.log("D1 execution failed or not available, falling back to LibSQL", e);
+            console.log("D1 not available, falling back to LibSQL", e);
         }
 
         // 2. 回退到 Turso / LibSQL
@@ -99,15 +86,14 @@ class DatabaseAdapter {
         return client.execute({ sql, args: sqlArgs });
     }
 
-    // 简单的命名参数转位置参数辅助函数
     private convertNamedParams(sql: string, params: Record<string, any>) {
         const newArgs: any[] = [];
-        const newSql = sql.replace(/:(\w+)/g, (match, key) => {
+        const newSql = sql.replace(/:(\\w+)/g, (match: string, key: string) => {
             if (params.hasOwnProperty(key)) {
                 newArgs.push(params[key]);
                 return '?';
             }
-            return match; // 未找到参数，保留原样
+            return match;
         });
         return { newSql, newArgs };
     }
