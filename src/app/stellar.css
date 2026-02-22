@@ -11832,9 +11832,8 @@ a[data-fancybox] {
 /* Float Panel - Sidebar Toggle Buttons */
 .float-panel {
   position: fixed;
-  --inset: 2rem;
-  right: var(--inset);
-  bottom: calc(var(--inset) * 2);
+  right: 1rem;
+  bottom: 3rem;
   z-index: 999999;
   display: flex;
   justify-content: center;
