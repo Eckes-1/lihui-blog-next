@@ -11829,11 +11829,20 @@ a[data-fancybox] {
   padding: 0;
 }
 
+/* Ensure l_body fills viewport for sticky float-panel */
+.l_body {
+  min-height: 100vh;
+}
+
 /* Float Panel - Sidebar Toggle Buttons */
 .float-panel {
-  position: fixed;
-  right: 1rem;
-  bottom: 3rem;
+  position: sticky;
+  grid-column-end: span 3;
+  right: 0;
+  bottom: 4rem;
+  margin-left: auto;
+  margin-right: 1rem;
+  float: right;
   z-index: 999999;
   display: flex;
   justify-content: center;
