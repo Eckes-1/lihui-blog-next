@@ -11834,32 +11834,6 @@ a[data-fancybox] {
   min-height: 100vh;
 }
 
-/* Float Panel - Sidebar Toggle Buttons */
-.float-panel {
-  position: sticky;
-  grid-column-end: span 3;
-  right: 0;
-  bottom: 4rem;
-  margin-left: auto;
-  margin-right: 2rem;
-  float: right;
-  z-index: 999999;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  border-radius: 64px;
-  overflow: hidden;
-  transition: all 0.2s ease-out;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
-  text-shadow: 0 0 4px #fff, 0 0 8px rgba(255, 255, 255, 0.8), 0 0 16px rgba(255, 255, 255, 0.6);
-}
-
-@media screen and (min-width: 667px) {
-  .float-panel {
-    margin-right: 3rem;
-  }
-}
-
 .float-panel:before,
 .float-panel:after {
   border-radius: 64px;
