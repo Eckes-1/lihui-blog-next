@@ -19,6 +19,9 @@ const preprocessContent = (content: string) => {
 
     let newContent = content;
 
+    // 将字面量的 \n 转换为真正的换行符（数据库可能存储了转义的换行符）
+    newContent = newContent.replace(/\\n/g, '\n');
+
     // --- 1. Note Tag ---
     newContent = newContent.replace(
         /{%\s*note\s+(.*?)\s*%}([\s\S]*?){%\s*endnote\s*%}/g,
