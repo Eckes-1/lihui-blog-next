@@ -1562,17 +1562,17 @@ a.button.start.gradient {
 .float-panel:before {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.85);
   margin: 1px;
 }
 
 :root[data-theme="dark"] .float-panel:before {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.65);
 }
 
 @media (prefers-color-scheme: dark) {
   .float-panel:before {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.65);
   }
 }
 
@@ -3181,17 +3181,17 @@ div.toast.show {
 .navbar-blur:before {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.85);
   margin: 1px;
 }
 
 :root[data-theme="dark"] .navbar-blur:before {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.65);
 }
 
 @media (prefers-color-scheme: dark) {
   .navbar-blur:before {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.65);
   }
 }
 
@@ -11850,7 +11850,7 @@ a[data-fancybox] {
 .float-panel:before {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.85);
   margin: 1px;
 }
 
@@ -11870,7 +11870,7 @@ a[data-fancybox] {
 }
 
 [data-theme="dark"] .float-panel:before {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.65);
 }
 
 [data-theme="dark"] .float-panel:after {
