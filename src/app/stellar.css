@@ -11995,18 +11995,34 @@ a[data-fancybox] {
 
 /* === Float Panel Glassmorphism Override === */
 .float-panel {
-  background: rgba(255, 255, 255, 0.65) !important;
-  backdrop-filter: blur(20px) saturate(200%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  overflow: visible !important;
+  /* 核心修复：移除 clip 导致的滤镜失效！ */
 }
 
 [data-theme="dark"] .float-panel {
-  background: rgba(30, 30, 30, 0.6) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
-.float-panel:before,
+.float-panel:before {
+  content: "" !important;
+  position: absolute !important;
+  display: block !important;
+  inset: 0 !important;
+  z-index: -1 !important;
+  border-radius: inherit !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(20px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+}
+
+[data-theme="dark"] .float-panel:before {
+  background: rgba(30, 30, 30, 0.5) !important;
+}
+
 .float-panel:after {
   display: none !important;
 }
